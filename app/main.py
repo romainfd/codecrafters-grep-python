@@ -21,7 +21,7 @@ def match_digit(input_line):
 
 
 def match_alphanumeric(input_line):
-    return any([w in input_line for w in ['abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789']])
+    return any([w in input_line for w in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789'])
 
 
 def main():

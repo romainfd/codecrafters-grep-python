@@ -30,6 +30,16 @@ def match_pattern(input_line, pattern, must_match_now=False):
                   (pattern[1] != '^' and match_positive_character_group(current_char, pattern[1:closingBracketIndex]))
     elif pattern[0] == '.':
         pattern_used, matched = '.', True
+    elif pattern[0] == '(':
+        closingParenthesisIndex = pattern.index(')')
+        pattern_used = pattern[:closingParenthesisIndex + 1]
+        or_patterns = pattern_used[1:-1].split('|')
+        # Not the most efficient but we "fork" until the end of the full pattern for each of them
+        end_pattern = pattern[len(pattern_used):]
+        for p in or_patterns:
+            if match_pattern(input_line, p + end_pattern):
+                return True
+        return False
     else:
         # We perform direct match
         pattern_used, matched = pattern[0], current_char == pattern[0]
@@ -46,7 +56,6 @@ def match_pattern(input_line, pattern, must_match_now=False):
             if not matched:  # we should not move to the next character as this pattern was optional
                 input_line_next = input_line
             pattern_used, matched = pattern[:len(pattern_used) + 1], True
-
 
     pattern_next = pattern
     if matched:

@@ -1,5 +1,6 @@
 import sys
 
+
 # import pyparsing - available if you need it!
 # import lark - available if you need it!
 
@@ -7,8 +8,14 @@ import sys
 def match_pattern(input_line, pattern):
     if len(pattern) == 1:
         return pattern in input_line
+    elif pattern == r"\d":
+        return match_digit(input_line)
     else:
         raise RuntimeError(f"Unhandled pattern: {pattern}")
+
+
+def match_digit(input_line):
+    return any([str(d) in input_line for d in range(10)])
 
 
 def main():

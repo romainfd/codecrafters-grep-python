@@ -40,8 +40,11 @@ def match_pattern(input_line, pattern, must_match_now=False):
             while match_pattern(input_line_next, pattern_used):
                 input_line_next = input_line_next[1:]
             pattern_used = pattern[:len(pattern_used) + 1]  # We also matched the + modifier
-        if pattern[len(pattern_used)] == '?':  # regardless of matched or not => it is a match
-            pattern_used, matched = pattern[:len(pattern_used) + 1], True  # We also matched (by no match) the ?
+        if pattern[len(pattern_used)] == '?':  # regardless of pattern matched or not => it is a match for ?
+            if not matched:  # we should not move to the next character as this pattern was optional
+                input_line_next = input_line
+            pattern_used, matched = pattern[:len(pattern_used) + 1], True
+
 
     pattern_next = pattern
     if matched:

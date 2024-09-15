@@ -6,18 +6,29 @@ import sys
 
 
 def match_pattern(input_line, pattern):
-    if len(pattern) == 1:
-        return pattern in input_line
-    elif pattern == r"\d":
-        return match_digit(input_line)
-    elif pattern == r"\w":
-        return match_alphanumeric(input_line)
+    # Termination
+    if len(pattern) == 0:
+        return True
+    if len(input_line) == 0:
+        return False
+
+    # Recurrence: tries to find 1st element of pattern
+    # We build input_line_next and pattern_next that will be used for the next match_pattern call
+    current_char, input_line_next, pattern_next = input_line[0], input_line[1:], pattern
+    if pattern == r"\d" and match_digit(input_line[0]):
+        pattern_next = pattern[2:]
+    elif pattern == r"\w" and match_alphanumeric(input_line[0]):
+        pattern_next = pattern[2:]
     elif pattern.startswith('['):
-        if pattern[1] == '^':
-            return match_negative_character_group(input_line, pattern[2:-1])
-        return match_positive_character_group(input_line, pattern[1:-1])
+        closingBracketIndex = pattern.index(']')
+        if (pattern[1] == '^' and match_negative_character_group(input_line, pattern[2:closingBracketIndex])) or \
+                match_positive_character_group(input_line, pattern[1:closingBracketIndex]):
+            pattern_next = pattern[closingBracketIndex + 1:]
     else:
-        raise RuntimeError(f"Unhandled pattern: {pattern}")
+        # We perform direct match
+        if input_line[0] == pattern[0]:
+            pattern_next = pattern[1:]
+    return match_pattern(input_line_next, pattern_next)
 
 
 def match_digit(input_line):

@@ -12,16 +12,25 @@ def match_pattern(input_line, pattern):
         return match_digit(input_line)
     elif pattern == r"\w":
         return match_alphanumeric(input_line)
+    elif pattern.startswith('['):
+        return match_positive_character_group(input_line, pattern[1:-1])
     else:
         raise RuntimeError(f"Unhandled pattern: {pattern}")
 
 
 def match_digit(input_line):
-    return any([str(d) in input_line for d in range(10)])
+    # return any([str(d) in input_line for d in range(10)])
+    return match_positive_character_group(input_line, range(10))
 
 
 def match_alphanumeric(input_line):
-    return any([w in input_line for w in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789'])
+    # return any([w in input_line for w in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789'])
+    return match_positive_character_group(input_line, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789')
+
+
+def match_positive_character_group(input_line, character_group):
+    # Ref.: https://learn.microsoft.com/en-us/dotnet/standard/base-types/character-classes-in-regular-expressions#positive-character-group--
+    return any([c in input_line for c in character_group])
 
 
 def main():

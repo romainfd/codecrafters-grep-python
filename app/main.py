@@ -5,7 +5,7 @@ import sys
 # import lark - available if you need it!
 
 
-def match_pattern(input_line, pattern):
+def match_pattern(input_line, pattern, mustMatchNow=False):
     # Debug investigation
     # print(f"{input_line:>50} | {pattern:>20}")
 
@@ -31,6 +31,8 @@ def match_pattern(input_line, pattern):
         # We perform direct match
         if current_char == pattern[0]:
             pattern_next = pattern[1:]
+    if mustMatchNow and len(pattern_next) == len(pattern):
+        return False
     return match_pattern(input_line_next, pattern_next)
 
 
@@ -62,7 +64,15 @@ def main():
         print("Expected first argument to be '-E'")
         exit(1)
 
-    if match_pattern(input_line, pattern):
+    if len(pattern) == 0:
+        return True
+
+    mustMatchNow = False
+    if pattern[0] == '^':
+        pattern = pattern[1:]
+        mustMatchNow = True
+
+    if match_pattern(input_line, pattern, mustMatchNow):
         exit(0)
     else:
         exit(1)

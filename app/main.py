@@ -28,6 +28,8 @@ def match_pattern(input_line, pattern, must_match_now=False):
         matched = (pattern[1] == '^' and match_negative_character_group(current_char, pattern[2:closingBracketIndex])) \
                   or \
                   (pattern[1] != '^' and match_positive_character_group(current_char, pattern[1:closingBracketIndex]))
+    elif pattern[0] == '.':
+        pattern_used, matched = '.', True
     else:
         # We perform direct match
         pattern_used, matched = pattern[0], current_char == pattern[0]

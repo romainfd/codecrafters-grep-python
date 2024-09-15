@@ -13,6 +13,8 @@ def match_pattern(input_line, pattern):
     elif pattern == r"\w":
         return match_alphanumeric(input_line)
     elif pattern.startswith('['):
+        if pattern[1] == '^':
+            return match_negative_character_group(input_line, pattern[2:-1])
         return match_positive_character_group(input_line, pattern[1:-1])
     else:
         raise RuntimeError(f"Unhandled pattern: {pattern}")
@@ -30,7 +32,12 @@ def match_alphanumeric(input_line):
 
 def match_positive_character_group(input_line, character_group):
     # Ref.: https://learn.microsoft.com/en-us/dotnet/standard/base-types/character-classes-in-regular-expressions#positive-character-group--
-    return any([c in input_line for c in character_group])
+    return any([c in character_group for c in input_line])
+
+
+def match_negative_character_group(input_line, character_group):
+    # Ref.: https://learn.microsoft.com/en-us/dotnet/standard/base-types/character-classes-in-regular-expressions#negative-character-group-
+    return any([c not in character_group for c in input_line])
 
 
 def main():

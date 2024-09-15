@@ -6,6 +6,9 @@ import sys
 
 
 def match_pattern(input_line, pattern):
+    # Debug investigation
+    # print(f"{input_line:>50} | {pattern:>20}")
+
     # Termination
     if len(pattern) == 0:
         return True
@@ -15,20 +18,19 @@ def match_pattern(input_line, pattern):
     # Recurrence: tries to find 1st element of pattern
     # We build input_line_next and pattern_next that will be used for the next match_pattern call
     current_char, input_line_next, pattern_next = input_line[0], input_line[1:], pattern
-    if pattern.startswith(r"\d") and match_digit(input_line[0]):
+    if pattern.startswith(r"\d") and match_digit(current_char):
         pattern_next = pattern[2:]
-    elif pattern.startswith(r"\w") and match_alphanumeric(input_line[0]):
+    elif pattern.startswith(r"\w") and match_alphanumeric(current_char):
         pattern_next = pattern[2:]
     elif pattern.startswith('['):
         closingBracketIndex = pattern.index(']')
-        if (pattern[1] == '^' and match_negative_character_group(input_line, pattern[2:closingBracketIndex])) or \
-                match_positive_character_group(input_line, pattern[1:closingBracketIndex]):
+        if (pattern[1] == '^' and match_negative_character_group(current_char, pattern[2:closingBracketIndex])) or \
+                (pattern[1] != '^' and match_positive_character_group(current_char, pattern[1:closingBracketIndex])):
             pattern_next = pattern[closingBracketIndex + 1:]
     else:
         # We perform direct match
-        if input_line[0] == pattern[0]:
+        if current_char == pattern[0]:
             pattern_next = pattern[1:]
-    # print(input_line_next, pattern_next)
     return match_pattern(input_line_next, pattern_next)
 
 

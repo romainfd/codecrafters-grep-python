@@ -10,12 +10,18 @@ def match_pattern(input_line, pattern):
         return pattern in input_line
     elif pattern == r"\d":
         return match_digit(input_line)
+    elif pattern == r"\w":
+        return match_alphanumeric(input_line)
     else:
         raise RuntimeError(f"Unhandled pattern: {pattern}")
 
 
 def match_digit(input_line):
     return any([str(d) in input_line for d in range(10)])
+
+
+def match_alphanumeric(input_line):
+    return any([w in input_line for w in ['abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789']])
 
 
 def main():

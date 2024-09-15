@@ -20,7 +20,7 @@ def match_pattern(input_line, pattern):
 
 def match_digit(input_line):
     # return any([str(d) in input_line for d in range(10)])
-    return match_positive_character_group(input_line, range(10))
+    return match_positive_character_group(input_line, '0123456789')
 
 
 def match_alphanumeric(input_line):

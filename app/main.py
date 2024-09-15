@@ -7,7 +7,7 @@ import sys
 
 def match_pattern(input_line, pattern, must_match_now=False):
     # Debug investigation
-    # print(f"{input_line:>50} | {pattern:>20}")
+    print(f"{input_line:>50} | {pattern:>20}")
 
     # Termination
     if len(pattern) == 0:
@@ -17,22 +17,33 @@ def match_pattern(input_line, pattern, must_match_now=False):
 
     # Recurrence: tries to find 1st element of pattern
     # We build input_line_next and pattern_next that will be used for the next match_pattern call
-    current_char, input_line_next, pattern_next = input_line[0], input_line[1:], pattern
-    if pattern.startswith(r"\d") and match_digit(current_char):
-        pattern_next = pattern[2:]
-    elif pattern.startswith(r"\w") and match_alphanumeric(current_char):
-        pattern_next = pattern[2:]
-    elif pattern.startswith('['):
+    current_char, input_line_next, pattern_used, matched = input_line[0], input_line[1:], '', False
+    if pattern.startswith(r"\d"):
+        pattern_used, matched = r"\d", match_digit(current_char)
+    elif pattern.startswith(r"\w"):
+        pattern_used, matched = r"\w", match_alphanumeric(current_char)
+    elif pattern[0] == '[':
         closingBracketIndex = pattern.index(']')
-        if (pattern[1] == '^' and match_negative_character_group(current_char, pattern[2:closingBracketIndex])) or \
-                (pattern[1] != '^' and match_positive_character_group(current_char, pattern[1:closingBracketIndex])):
-            pattern_next = pattern[closingBracketIndex + 1:]
+        pattern_used = pattern[:closingBracketIndex + 1]
+        matched = (pattern[1] == '^' and match_negative_character_group(current_char, pattern[2:closingBracketIndex])) \
+                  or \
+                  (pattern[1] != '^' and match_positive_character_group(current_char, pattern[1:closingBracketIndex]))
     else:
         # We perform direct match
-        if current_char == pattern[0]:
-            pattern_next = pattern[1:]
-    if must_match_now and len(pattern_next) == len(pattern):  # pattern length didn't change = no match during this loop
+        pattern_used, matched = pattern[0], current_char == pattern[0]
+    if must_match_now and not matched:
         return False
+
+    # Check for modifier
+    if len(pattern) > len(pattern_used):
+        if matched and pattern[len(pattern_used)] == '+':
+            while match_pattern(input_line_next, pattern_used):
+                input_line_next = input_line_next[1:]
+            pattern_used = pattern[:len(pattern_used) + 1]  # We also matched the + modifier
+
+    pattern_next = pattern
+    if matched:
+        pattern_next = pattern[len(pattern_used):]
     if pattern_next == '$':
         return input_line_next == ''
     return match_pattern(input_line_next, pattern_next)
